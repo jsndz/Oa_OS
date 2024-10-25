@@ -3,13 +3,168 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Oa OS</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>OS Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .window {
+        resize: both;
+        overflow: auto;
+        min-width: 200px;
+        min-height: 100px;
+      }
+    </style>
   </head>
-  <body>
-    <div id="app">
-      <h1>Welcome to Oa OS</h1>
+  <body class="bg-gray-100 h-screen flex flex-col">
+    <!-- Desktop background -->
+    <div
+      class="absolute inset-0 bg-cover bg-center z-0"
+      style="background-color: bisque"
+    ></div>
+
+    <!-- Desktop -->
+    <div
+      id="desktop"
+      class="flex-grow p-4 grid grid-cols-6 gap-4 relative z-10"
+    >
+      <!-- Desktop icons -->
+      <div
+        class="apps text-center cursor-pointer w-16 h-16"
+        data-app="file-explorer"
+        onclick="launchApp('file-explorer')"
+      >
+        <div
+          class="bg-blue-500 w-16 h-16 mx-auto mb-2 flex items-center justify-center rounded"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+            />
+          </svg>
+        </div>
+        <span class="text-sm text-white drop-shadow">File Explorer</span>
+      </div>
+      <div
+        class="apps text-center cursor-pointer w-16 h-16"
+        data-app="settings"
+        onclick="launchApp('settings')"
+      >
+        <div
+          class="bg-gray-500 w-16 h-16 mx-auto mb-2 flex items-center justify-center rounded"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+          </svg>
+        </div>
+        <span class="text-sm text-white drop-shadow">Settings</span>
+      </div>
+      <div
+        class="apps text-center cursor-pointer w-16 h-16"
+        data-app="camera"
+        onclick="launchApp('camera')"
+      >
+        <div
+          class="bg-green-500 w-16 h-16 mx-auto mb-2 flex items-center justify-center rounded"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+          </svg>
+        </div>
+        <span class="text-sm text-white drop-shadow">Camera</span>
+      </div>
     </div>
-    <script src="app.js"></script>
+
+    <!-- Windows -->
+    <div id="app-windows" class="absolute inset-0 pointer-events-none"></div>
+
+    <!-- Taskbar -->
+    <div
+      class="bg-gray-800 text-white p-2 flex justify-between items-center relative z-20"
+    >
+      <div class="flex items-center space-x-2">
+        <button id="startButton" class="p-1 rounded hover:bg-gray-700">
+          Start
+        </button>
+        <input
+          type="text"
+          placeholder="Search..."
+          class="bg-gray-700 px-2 py-1 rounded text-sm"
+        />
+      </div>
+      <div id="openApps" class="flex space-x-2"></div>
+      <div class="text-sm" id="clock">12:00 PM</div>
+    </div>
+
+    <!-- Start Menu -->
+    <div
+      id="startMenu"
+      class="hidden absolute bottom-12 left-0 bg-gray-800 text-white p-4 rounded-lg shadow-lg z-30"
+    >
+      <h2 class="text-xl font-bold mb-2">Applications</h2>
+      <ul>
+        <li class="cursor-pointer hover:bg-gray-700 p-2 rounded">
+          File Explorer
+        </li>
+        <li class="cursor-pointer hover:bg-gray-700 p-2 rounded">Settings</li>
+        <li class="cursor-pointer hover:bg-gray-700 p-2 rounded">Camera</li>
+      </ul>
+    </div>
+    <script src="src/main.js"></script>
+    <script>
+      // Clock
+      function updateClock() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        document.getElementById("clock").textContent = timeString;
+      }
+
+      setInterval(updateClock, 1000);
+      updateClock();
+    </script>
   </body>
 </html>
